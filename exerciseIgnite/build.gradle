@@ -1,0 +1,67 @@
+plugins {
+  id 'java'
+  id 'application'
+  id 'com.github.johnrengelman.shadow' version '1.2.2'
+  id 'maven-publish
+  id 'docker'
+}
+
+repositories {
+  jcenter()
+}
+
+version = '3.2.1'
+sourceCompatibility = '1.8'
+
+dependencies {
+  compile "io.vertx:vertx-core:$version"
+  compile 'io.vertx:vertx-ignite:3.3.0-SNAPSHOT'
+  testCompile group: 'junit', name: 'junit', version: '4.11'
+  classpath 'se.transmode.gradle:gradle-docker:1.2'
+}
+
+mainClassName = 'theglue.vertx.exrcise.ignite.TestVertXAndIgnite'
+
+shadowJar {
+  classifier = 'fat'
+  mergeServiceFiles {
+    include 'META-INF/services/io.vertx.core.spi.VerticleFactory'
+  }
+}
+
+task copyConf(type: Copy) {
+  from System.getProperty('user.dir') + ""/conf""
+  into ""$buildDir/conf""
+}
+
+task createConf {
+  def conf = file(""$buildDir/conf"")
+  outputs.dir conf
+  doLast {
+    conf.mkdirs()
+    copyConf.execute()
+  }
+}
+
+task wrapper(type: Wrapper) {
+  gradleVersion = '2.13'
+}
+
+docker {
+  baseImage = 'sercankaraoglu/vertx-base'
+  maintainer = 'Sercan Karaoglu ""hsercankaraoglu@gmail.com""'
+}
+
+distributions {
+  main {
+    contents {
+      from(createConf) { into ""/conf"" }
+    }
+  }
+}
+
+distDocker{
+  dockerfile {
+    expose 8080
+  }
+}
