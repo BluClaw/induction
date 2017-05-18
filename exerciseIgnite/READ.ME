@@ -1,0 +1,20 @@
+++++ Induction exercise ++++
+
+I. Requirements:
+	Implement a REST service in Vert.x that persists/queries books in/from Apache Ignite Cache.
+
+	I. a) example
+		POST /books -- create new book
+			with body:
+    {
+    	isbn: ‘978-0201485677’,
+    	title: ‘Refactoring: Improving the Design of Existing Code’,
+    	authors: [‘Martin Fowler’, ‘Kent Beck’],
+    }
+
+GET /books -- list all books
+GET /books/id -- get book by id
+
+II. Infrastructure Requirements:
+	The Ignite Cluster is formed by 2 nodes.
+		Nodes are configured in write-through mode (so that cache is written to disk and survives node restarts).
